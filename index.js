@@ -80,8 +80,8 @@ io.on('connection', function(socket) {
         user: userId
       });
 
-      io.emit('user list', userList);
-      io.emit('user left', userId);
+      socket.broadcast.emit('user list', userList);
+      socket.broadcast.emit('user left', userId);
     }
   });
 });

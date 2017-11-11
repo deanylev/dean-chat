@@ -96,10 +96,14 @@ socket.on('all messages', function(messages) {
         $('#messages').find('p:last').append(text);
         break;
       case 'joined':
-        $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[val.user].name} joined</em></p>`);
+        if (val.user !== JSON.parse(localStorage.getItem('user')).id) {
+          $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[val.user].name} joined</em></p>`);
+        }
         break;
       case 'left':
-        $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[val.user].name} left</em></p>`);
+        if (val.user !== JSON.parse(localStorage.getItem('user')).id) {
+          $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[val.user].name} left</em></p>`);
+        }
         break;
     }
   });
@@ -112,11 +116,15 @@ socket.on('chat message', function(message) {
 });
 
 socket.on('user joined', function(user) {
-  $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[user].name} joined</em></p>`);
+  if (user !== JSON.parse(localStorage.getItem('user')).id) {
+    $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[user].name} joined</em></p>`);
+  }
 });
 
 socket.on('user left', function(user) {
-  $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[user].name} left</em></p>`);
+  if (user !== JSON.parse(localStorage.getItem('user')).id) {
+    $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[user].name} left</em></p>`);
+  }
 });
 
 if (localStorage.getItem('username')) {
