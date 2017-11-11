@@ -88,6 +88,7 @@ socket.on('user list', function(list) {
 });
 
 socket.on('all messages', function(messages) {
+  $('#messages').empty();
   $.each(messages, function(key, val) {
     switch (val.type) {
       case 'chat':
