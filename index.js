@@ -19,7 +19,8 @@ io.on('connection', function(socket) {
     userId = user.id;
     userList[user.id] = {
       name: user.name,
-      status: 'online'
+      status: 'online',
+      statusSince: Date.now()
     }
 
     io.emit('user list', userList);
@@ -52,6 +53,7 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     if (userId) {
       userList[userId].status = 'offline';
+      userList[userId].statusSince = Date.now();
 
       messageList.push({
         type: 'left',

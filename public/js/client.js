@@ -46,14 +46,14 @@ $('#name').submit(function() {
 });
 
 socket.on('user list', function(list) {
-  $('#online-users').empty();
+  $('.user-list').empty();
 
   userList = list;
 
   $.each(list, function(key, val) {
-    if (val.status === 'online') {
-      $('#online-users').append(`<p>${val.name}</p>`);
-    }
+    $(`#${val.status}-users`).append(`<p class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Since ${moment(val.statusSince).format("MMM DD YYYY [at] hh:mm a")}">${val.name}</p>`);
+    $('.material-tooltip').remove();
+    $('.tooltipped').tooltip();
   });
 });
 
