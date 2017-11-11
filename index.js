@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 
 var userList = {};
 var messageList = [];
+var currentlyTyping = [];
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -50,10 +51,29 @@ io.on('connection', function(socket) {
     io.emit('all messages', messageList);
   });
 
+  socket.on('currently typing', function(user) {
+    if (currentlyTyping.indexOf(user) <= -1) {
+      currentlyTyping.push(user);
+    }
+
+    io.emit('currently typing', currentlyTyping);
+  });
+
+  socket.on('stopped typing', function(user) {
+    currentlyTyping.splice(currentlyTyping.indexOf(user), 1);
+
+    io.emit('currently typing', currentlyTyping);
+  });
+
   socket.on('disconnect', function() {
     if (userId) {
       userList[userId].status = 'offline';
       userList[userId].statusSince = Date.now();
+
+      if (currentlyTyping.indexOf(userList[userId].name) > -1) {
+        currentlyTyping.splice(userList[userId].name, 1);
+        io.emit('currently typing', currentlyTyping);
+      }
 
       messageList.push({
         type: 'left',

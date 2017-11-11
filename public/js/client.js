@@ -1,6 +1,7 @@
 var socket = io();
 var loggedIn;
 var userList;
+var lastTyped;
 
 function login(id, name) {
   if (!loggedIn) {
@@ -37,7 +38,36 @@ $('#message').keypress(function(e) {
       user: JSON.parse(localStorage.getItem('user')).id,
       text: $(this).val()
     });
+
     $(this).val('');
+  }
+});
+
+$('#message').keydown(function() {
+  lastTyped = Date.now();
+
+  socket.emit('currently typing', JSON.parse(localStorage.getItem('user')).name);
+});
+
+$('#message').keyup(function() {
+  setTimeout(function() {
+    if (Date.now() - lastTyped >= 1999) {
+      socket.emit('stopped typing', JSON.parse(localStorage.getItem('user')).name);
+    }
+  }, 2000)
+});
+
+socket.on('currently typing', function(array) {
+  $('#typing').empty();
+
+  let index = array.indexOf(JSON.parse(localStorage.getItem('user')).name);
+  if (index > -1) {
+    array.splice(index, 1);
+  }
+
+  let word = array.length === 1 ? 'is' : 'are';
+  if (array.length) {
+    $('#typing').text(`${array.join(' and ')} ${word} typing...`);
   }
 });
 
