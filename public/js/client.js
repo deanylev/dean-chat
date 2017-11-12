@@ -33,7 +33,7 @@ $('#submit-name').click(function() {
 });
 
 $('#message').keypress(function(e) {
-  if (e.keyCode === 13) {
+  if ($(this).val() && e.keyCode === 13) {
     socket.emit('chat message', {
       user: JSON.parse(localStorage.getItem('user')).id,
       text: $(this).val()
