@@ -43,18 +43,21 @@ $('#message').keypress(function(e) {
   }
 });
 
-$('#message').keydown(function() {
-  lastTyped = Date.now();
-
-  socket.emit('currently typing', JSON.parse(localStorage.getItem('user')).name);
+$('#message').keydown(function(e) {
+  if (e.keyCode !== 13) {
+    lastTyped = Date.now();
+    socket.emit('currently typing', JSON.parse(localStorage.getItem('user')).name);
+  }
 });
 
-$('#message').keyup(function() {
-  setTimeout(function() {
-    if (Date.now() - lastTyped >= 1999) {
-      socket.emit('stopped typing', JSON.parse(localStorage.getItem('user')).name);
-    }
-  }, 2000)
+$('#message').keyup(function(e) {
+  if (e.keyCode !== 13) {
+    setTimeout(function() {
+      if (Date.now() - lastTyped >= 1999) {
+        socket.emit('stopped typing', JSON.parse(localStorage.getItem('user')).name);
+      }
+    }, 2000)
+  }
 });
 
 socket.on('currently typing', function(array) {
