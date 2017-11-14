@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var async = require('async');
 
 var userList = {};
 var messageList = [];
@@ -15,23 +16,40 @@ app.use(express.static(__dirname + '/public'));
 
 io.on('connection', function(socket) {
   var userId;
+  var nameTaken = false;
 
-  socket.on('new user', function(user) {
-    userId = user.id;
-    userList[user.id] = {
-      name: user.name,
-      status: 'online',
-      statusSince: Date.now()
+  socket.on('new user', function(user, output) {
+    if (!user.name) {
+      output('Can\'t be blank');
+    } else if (/[~`!#$%\^&*()+=\[\]\\';,/{}|\\":<>\?]/g.test(user.name)) {
+      output('Forbidden characters');
+    } else {
+      async.forEachOf(userList, function(value, key, callback) {
+        if (value.name.toLowerCase() === user.name.toLowerCase()) {
+          nameTaken = true
+        }
+      });
+
+      if (!nameTaken) {
+        userId = user.id;
+        userList[userId] = {
+          name: user.name,
+          status: 'online',
+          statusSince: Date.now()
+        };
+
+        io.emit('user list', userList);
+        socket.emit('all messages', messageList);
+        io.emit('user joined', userId);
+
+        messageList.push({
+          type: 'joined',
+          user: userId
+        });
+      } else {
+        output('Name is taken')
+      }
     }
-
-    io.emit('user list', userList);
-    socket.emit('all messages', messageList);
-    io.emit('user joined', userId);
-
-    messageList.push({
-      type: 'joined',
-      user: userId
-    });
   });
 
   socket.on('chat message', function(message) {

@@ -10,15 +10,19 @@ function login(id, name) {
       name: name
     };
 
-    socket.emit('new user', user);
+    socket.emit('new user', user, function(data) {
+      if (data) {
+        Materialize.toast(data, 1500);
+      } else {
+        $('.login').addClass('hide');
+        $('.signed-in').removeClass('hide');
+        $('#username').text(user.name);
 
-    $('.login').addClass('hide');
-    $('.signed-in').removeClass('hide');
-    $('#username').text(user.name);
+        localStorage.setItem('user', JSON.stringify(user));
 
-    localStorage.setItem('user', JSON.stringify(user));
-
-    loggedIn = true;
+        loggedIn = true;
+      }
+    });
   }
 }
 
