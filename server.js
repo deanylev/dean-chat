@@ -45,10 +45,20 @@ io.on('connection', function(socket) {
   });
 
   socket.on('name change', function(user) {
+    var currentName = userList[user.id].name;
+    var text = `${currentName} changed their name to ${user.name}`;
+
     userList[user.id].name = user.name;
+
+    messageList.push({
+      type: 'change',
+      user: user.id,
+      text: `${currentName} changed their name to ${user.name}`
+    });
 
     io.emit('user list', userList);
     io.emit('all messages', messageList);
+    io.emit('new name', text, user.id);
   });
 
   socket.on('currently typing', function(user) {

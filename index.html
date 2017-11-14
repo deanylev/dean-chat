@@ -14,31 +14,42 @@
 <body>
   <nav>
     <div class="nav-wrapper blue">
-      <a href="#" class="brand-logo center">DeanChat</a>
-      <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><a href="sass.html">Sass</a></li>
-        <li><a href="badges.html">Components</a></li>
-        <li><a href="collapsible.html">JavaScript</a></li>
+      <a class="brand-logo center">DeanChat</a>
+      <ul class="right">
+        <li><a id="username" class="dropdown-button" data-activates="user-dropdown"></a></li>
+      </ul>
+      <ul id="user-dropdown" class="dropdown-content">
+        <li><a id="rename" data-target="rename-modal" class="modal-trigger signed-in hide">Change Name</a></li>
+        <li><a id="logout" class="signed-in hide">Log Out</a></li>
       </ul>
     </div>
   </nav>
   <main class="container">
-    <section class="login">
+    <br>
+    <section class="login center">
       <div class="row">
         <div class="col s12">
           Please enter your name:
           <div class="input-field inline">
             <input id="name" type="text">
           </div>
-          <button id="submit-name" class="btn">Enter</button>
+          <button id="submit-name" class="btn waves-effect blue">Enter</button>
         </div>
       </div>
     </section>
     <section class="signed-in hide">
+      <div id="rename-modal" class="modal">
+        <div class="modal-content">
+          <h4>Change name</h4>
+          <input type="text" placeholder="Enter a new name">
+          <button class="btn waves-effect blue">Submit</button>
+        </div>
+      </div>
       <div class="row">
         <div class="col m10 s12">
           <h3 class="center">Messages</h3>
-          <div id="messages"><br><h5 class="center">Loading messages...</h5></div>
+          <div id="messages"><br>
+            <h5 class="center">Loading messages...</h5></div>
           <em><b><span id="typing"></span></b></em>
         </div>
         <div class="col m2 hide-on-small-only">
@@ -52,7 +63,7 @@
     </section>
   </main>
   <footer class="container">
-    <input id="message" type="text">
+    <input id="message" class="signed-in hide" type="text" placeholder="Type your message and press enter">
   </footer>
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/client.js"></script>

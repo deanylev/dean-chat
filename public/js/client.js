@@ -14,6 +14,7 @@ function login(id, name) {
 
     $('.login').addClass('hide');
     $('.signed-in').removeClass('hide');
+    $('#username').text(user.name);
 
     localStorage.setItem('user', JSON.stringify(user));
 
@@ -21,11 +22,48 @@ function login(id, name) {
   }
 }
 
-if (localStorage.getItem('user')) {
+function logout() {
+  if (loggedIn) {
+    socket.disconnect();
 
+    $('.login').removeClass('hide');
+    $('.signed-in').addClass('hide');
+    $('#username').empty();
+
+    localStorage.removeItem('user');
+
+    loggedIn = false;
+
+    socket.connect();
+  }
+}
+
+$('#logout').click(logout);
+
+$('#rename-modal').modal();
+
+$('#rename-modal button').click(function() {
+  let name = $('#rename-modal input').val();
+
+  if (name) {
+    let user = JSON.parse(localStorage.getItem('user'));
+    user.name = name;
+
+    socket.emit('name change', user);
+
+    localStorage.setItem('user', JSON.stringify(user));
+
+    logout();
+    login(user.id, user.name);
+
+  }
+
+  $('#rename-modal').modal('close');
+});
+
+if (localStorage.getItem('user')) {
   let user = JSON.parse(localStorage.getItem('user'));
   login(user.id, user.name);
-
 }
 
 $('#submit-name').click(function() {
@@ -109,6 +147,11 @@ socket.on('all messages', function(messages) {
           $('#messages').append(`<p class="grey-text text-darken-3"><em>${userList[val.user].name} left</em></p>`);
         }
         break;
+      case 'change':
+        if (val.user !== JSON.parse(localStorage.getItem('user')).id) {
+          $('#messages').append(`<p class="grey-text text-darken-3"><em>${val.text}</em></p>`);
+        }
+        break;
     }
   });
 });
@@ -131,8 +174,8 @@ socket.on('user left', function(user) {
   }
 });
 
-if (localStorage.getItem('username')) {
-  $('.main').removeClass('hide');
-} else {
-  $('.name').removeClass('hide');
-}
+socket.on('name change', function(text, user) {
+  if (user !== JSON.parse(localStorage.getItem('user')).id) {
+    $('#messages').append(`<p class="grey-text text-darken-3"><em>${text}</em></p>`);
+  }
+});

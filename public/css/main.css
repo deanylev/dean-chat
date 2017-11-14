@@ -7,3 +7,16 @@ body {
 main {
   flex: 1 0 auto;
 }
+
+input[type="text"]:focus {
+  border-bottom: 1px solid #2C98F0 !important;
+  box-shadow: 0 1px 0 0 #2C98F0 !important;
+}
+
+.nav-wrapper ul a {
+  cursor: pointer;
+}
+
+.dropdown-content li a {
+  color: #2C98F0;
+}
